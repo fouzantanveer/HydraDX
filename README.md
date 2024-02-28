@@ -72,7 +72,7 @@ Liquidity mining involves distributing additional rewards to liquidity providers
 ### Liquidity Adjustments
 
 #### Adding Liquidity
-```markdown
+
 When adding liquidity to the pool, the number of shares \(S_{\text{new}}\) minted for the liquidity provider is determined based on the proportion of the liquidity \(L_{\text{add}}\) added relative to the existing total liquidity \(L_{\text{total}}\) before the addition:
 
 $$S_{\text{new}} = \frac{L_{\text{add}}}{L_{\text{total}}} \times S_{\text{total}}$$
@@ -81,10 +81,10 @@ where:
 - \(L_{\text{add}}\) is the amount of liquidity added by the provider,
 - \(L_{\text{total}}\) is the total liquidity in the pool before adding,
 - \(S_{\text{total}}\) is the total shares in the pool before adding.
-```
+
 
 #### Removing Liquidity
-```markdown
+
 When removing liquidity, the amount of assets \(A_{\text{remove}}\) returned to the provider is based on the proportion of the shares \(S_{\text{burn}}\) they are burning:
 
 $$A_{\text{remove}} = \frac{S_{\text{burn}}}{S_{\text{total}}} \times A_{\text{total}}$$
@@ -93,12 +93,12 @@ where:
 - \(S_{\text{burn}}\) is the number of shares the provider is burning,
 - \(S_{\text{total}}\) is the total shares in the pool,
 - \(A_{\text{total}}\) is the total assets in the pool.
-```
+
 
 ### Trade Execution
 
 #### Price Impact and Trade Execution
-```markdown
+
 The price impact of a trade and the resulting asset amounts are often determined using functions derived from the constant product formula, \(x \times y = k\), in traditional AMMs or other formulas depending on the specific AMM model. For a trade that exchanges asset \(X\) for asset \(Y\), the formula adjusts to account for the input amount \(X_{\text{in}}\), the liquidity pool's reserves \(X_{\text{reserve}}\) and \(Y_{\text{reserve}}\), and applied fees.
 
 The new reserve for \(X\) after the trade \(X'_{\text{reserve}}\) can be determined by adding the input amount to the current reserve, adjusting for fees:
@@ -106,23 +106,20 @@ The new reserve for \(X\) after the trade \(X'_{\text{reserve}}\) can be determi
 $$X'_{\text{reserve}} = X_{\text{reserve}} + X_{\text{in}} \times (1 - \text{fee rate})$$
 
 The output amount \(Y_{\text{out}}\) can then be calculated based on the constant product formula or another liquidity model, ensuring the invariant holds after accounting for the input amount and fees.
-```
+
 
 #### Fee Application
-```markdown
+
 Fees are a crucial part of the trade execution process, providing compensation to liquidity providers and supporting the sustainability of the pool. The fee for a trade can be calculated as a percentage of the trade amount:
 
 $$\text{Fee} = X_{\text{in}} \times \text{fee rate}$$
 
 This fee is typically added to the pool's reserves, indirectly benefiting liquidity providers by increasing the total value held within the pool.
-```
+
 
 ### Conclusion
-```markdown
-The mathematical expressions outlined above provide a foundational understanding of the operations within HydraDX's Omnipool...
-```
 
-To include these expressions in your GitHub repository, simply place them in a `.md` file using the syntax shown above. GitHub will render the LaTeX equations within the Markdown file, ensuring that the mathematical expressions are displayed correctly.
+The mathematical expressions outlined above provide a foundational understanding of the operations within HydraDX's Omnipool...
 
 ### Inter-module Communication and Logic Flow
 
@@ -136,3 +133,39 @@ A critical analysis of the project's logic reveals a strong emphasis on security
 
 Furthermore, the `staking.rs` and `liquidity_mining.rs` modules embody the project's innovative approach to incentivizing participation. The logic within these modules is designed to balance rewards with network security and liquidity provision, creating a sustainable ecosystem where users are motivated to contribute to the platform's health and growth.
 
+### Interaction of core file
+
+The `lib.rs` file from the HydraDX Omnipool pallet is central to the Omnipool's functionality, interacting extensively with various components both within the pallet and external modules to accomplish its objectives. Here's an analysis of its interactions and how it ties into the broader ecosystem:
+
+### Interactions Within the Omnipool Pallet
+
+#### Asset and Liquidity Management
+- **Assets and Positions**: The core file interacts with its own storage items like `Assets` and `Positions` to manage the state of each asset in the Omnipool and the liquidity positions held by users. Functions like `add_token`, `add_liquidity`, and `remove_liquidity` modify these storage items directly to reflect changes in liquidity and asset status.
+
+#### Mathematical Operations
+- **Mathematical Libraries**: For price calculations, liquidity adjustments, and trade execution, the Omnipool relies on mathematical models. The file calls into the `hydra_dx_math` library for functions like `calculate_add_liquidity_state_changes`, `calculate_remove_liquidity_state_changes`, and trade price calculations, ensuring that all operations are grounded in solid mathematical principles.
+
+### Interactions with External Pallets and Modules
+
+#### Currency and Asset Management
+- **MultiCurrency (from `orml_traits`)**: The Omnipool interacts with a generalized multi-currency interface for asset transfers, deposits, and withdrawals. This is crucial for the Omnipool's functionality, as it allows the seamless exchange of different assets within the pool.
+
+#### NFTs for Liquidity Positions
+- **NFTHandler**: Liquidity positions in the Omnipool are represented as NFTs. The pallet interacts with an NFT module compliant with `frame_support` traits for creating, minting, and burning NFTs, linking liquidity positions directly to unique, tradable assets.
+
+### Hooks and Callbacks
+
+#### Omnipool Hooks
+- **OmnipoolHooks**: For extensibility, the Omnipool implements hooks that are called during key operations like liquidity changes and trades. These hooks allow for additional logic to be executed, such as updating on-chain oracles or interacting with other pallets like a circuit breaker or fee distribution mechanisms.
+
+#### Price and Safety Checks
+- **PriceBarrier and ExternalPriceOracle**: To protect against price manipulation and ensure the safety of trades, the Omnipool interacts with price oracles. It validates operations against external price feeds and internal price barriers, adjusting operations as necessary to maintain market integrity.
+
+### Cross-Pallet Interactions for Governance and Technical Operations
+- **AuthorityOrigin and TechnicalOrigin**: Certain operations within the Omnipool, like setting asset tradable states or managing protocol liquidity, are restricted to governance or technical administrators. The pallet enforces these permissions through specific origin checks, ensuring that only authorized operations are executed.
+
+### Summary
+The `lib.rs` file serves as the heart of the HydraDX Omnipool, coordinating complex interactions between internal logic, external modules, and cross-pallet functionalities. Through these interactions, it supports a wide range of operations from liquidity provision and trading to governance actions, all while maintaining security, efficiency, and user trust. These mechanisms collectively ensure the Omnipool's capability to function as a dynamic, secure, and user-centric decentralized exchange platform.
+
+
+[![lib.png](https://i.postimg.cc/ZqxR39GJ/lib.png)](https://postimg.cc/8FsNgCkY)
