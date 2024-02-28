@@ -65,47 +65,64 @@ Liquidity mining involves distributing additional rewards to liquidity providers
 - The `circuit-breaker` module introduces a unique mechanism to protect the DEX and its users from extreme market conditions or manipulation by temporarily halting trading or liquidity movements that exceed predefined thresholds.
 
 
-### Core Contract and Its Logic
-
-At the heart of HydraDX's architecture is the concept of an Automated Market Maker (AMM), which is fundamentally redefined in the project through the `amm.rs` module. Unlike traditional AMM models that rely on constant product formulas, HydraDX introduces innovative mechanisms to manage liquidity and pricing. This approach addresses common issues in DEX platforms, such as impermanent loss and slippage, by dynamically adjusting pool parameters based on real-time market conditions. The logic embedded within this module is a testament to the project's commitment to enhancing user experience and market efficiency.
+### Mathematical Logic
 
 
 
+### Liquidity Adjustments
+
+#### Adding Liquidity
+```markdown
+When adding liquidity to the pool, the number of shares \(S_{\text{new}}\) minted for the liquidity provider is determined based on the proportion of the liquidity \(L_{\text{add}}\) added relative to the existing total liquidity \(L_{\text{total}}\) before the addition:
+
+$$S_{\text{new}} = \frac{L_{\text{add}}}{L_{\text{total}}} \times S_{\text{total}}$$
+
+where:
+- \(L_{\text{add}}\) is the amount of liquidity added by the provider,
+- \(L_{\text{total}}\) is the total liquidity in the pool before adding,
+- \(S_{\text{total}}\) is the total shares in the pool before adding.
 ```
-// Example snippet from amm.rs (Hypothetical representation for explanation purposes)
-pub struct Pool {
-    pub asset_a: AssetId,
-    pub asset_b: AssetId,
-    pub weight_a: Balance,
-    pub weight_b: Balance,
-    pub liquidity_token: AssetId,
-}
 
-impl Pool {
-    // Function to adjust weights dynamically based on market conditions
-    fn adjust_weights(&mut self, new_weight_a: Balance, new_weight_b: Balance) {
-        self.weight_a = new_weight_a;
-        self.weight_b = new_weight_b;
-        // Logic to ensure pool's balance and fairness are maintained
-    }
+#### Removing Liquidity
+```markdown
+When removing liquidity, the amount of assets \(A_{\text{remove}}\) returned to the provider is based on the proportion of the shares \(S_{\text{burn}}\) they are burning:
 
-    // Function to calculate prices considering dynamic weights
-    fn calculate_price(&self, amount: Balance, sell_asset: AssetId) -> Result<Balance, Error> {
-        // Implementation uses dynamic weights for price calculation
-    }
+$$A_{\text{remove}} = \frac{S_{\text{burn}}}{S_{\text{total}}} \times A_{\text{total}}$$
 
-    // Function to mitigate impermanent loss by adjusting pool parameters
-    fn mitigate_impermanent_loss(&mut self) {
-        // Logic to adjust parameters like weights dynamically
-    }
-}
+where:
+- \(S_{\text{burn}}\) is the number of shares the provider is burning,
+- \(S_{\text{total}}\) is the total shares in the pool,
+- \(A_{\text{total}}\) is the total assets in the pool.
 ```
-### Analysis
-- **Dynamic Weight Adjustment:** The adjust_weights function hypothetically demonstrates how weights can be adjusted. In the actual amm.rs, this logic would involve complex calculations based on current liquidity, volume, and market trends to optimize the pool's performance and minimize risks like impermanent loss.
 
-- **Price Calculation with Dynamic Weights:** The calculate_price method indicates that prices are calculated using the dynamically adjusted weights, which allows for more accurate pricing that adapts to market conditions, reducing slippage for traders.
+### Trade Execution
 
-- **Impermanent Loss Mitigation:** The method mitigate_impermanent_loss suggests a proactive approach to adjusting pool parameters, which would be part of the HydraDX logic to dynamically counteract the effects of impermanent loss, making the AMM more resilient and trader-friendly.
+#### Price Impact and Trade Execution
+```markdown
+The price impact of a trade and the resulting asset amounts are often determined using functions derived from the constant product formula, \(x \times y = k\), in traditional AMMs or other formulas depending on the specific AMM model. For a trade that exchanges asset \(X\) for asset \(Y\), the formula adjusts to account for the input amount \(X_{\text{in}}\), the liquidity pool's reserves \(X_{\text{reserve}}\) and \(Y_{\text{reserve}}\), and applied fees.
+
+The new reserve for \(X\) after the trade \(X'_{\text{reserve}}\) can be determined by adding the input amount to the current reserve, adjusting for fees:
+
+$$X'_{\text{reserve}} = X_{\text{reserve}} + X_{\text{in}} \times (1 - \text{fee rate})$$
+
+The output amount \(Y_{\text{out}}\) can then be calculated based on the constant product formula or another liquidity model, ensuring the invariant holds after accounting for the input amount and fees.
+```
+
+#### Fee Application
+```markdown
+Fees are a crucial part of the trade execution process, providing compensation to liquidity providers and supporting the sustainability of the pool. The fee for a trade can be calculated as a percentage of the trade amount:
+
+$$\text{Fee} = X_{\text{in}} \times \text{fee rate}$$
+
+This fee is typically added to the pool's reserves, indirectly benefiting liquidity providers by increasing the total value held within the pool.
+```
+
+### Conclusion
+```markdown
+The mathematical expressions outlined above provide a foundational understanding of the operations within HydraDX's Omnipool...
+```
+
+To include these expressions in your GitHub repository, simply place them in a `.md` file using the syntax shown above. GitHub will render the LaTeX equations within the Markdown file, ensuring that the mathematical expressions are displayed correctly.
 
 ### Inter-module Communication and Logic Flow
 
