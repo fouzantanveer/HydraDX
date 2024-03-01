@@ -73,39 +73,46 @@ Liquidity mining involves distributing additional rewards to liquidity providers
 
 #### Adding Liquidity
 
-When adding liquidity to the pool, the number of shares \(S_{\text{new}}\) minted for the liquidity provider is determined based on the proportion of the liquidity \(L_{\text{add}}\) added relative to the existing total liquidity \(L_{\text{total}}\) before the addition:
+When adding liquidity to the pool, the number of shares $\(S_{\text{new}}\)$ minted for the liquidity provider is determined based on the proportion of the liquidity $\(L_{\text{add}}\)$ added relative to the existing total liquidity $\(L_{\text{total}}\)$ before the addition:
 
 $$S_{\text{new}} = \frac{L_{\text{add}}}{L_{\text{total}}} \times S_{\text{total}}$$
 
 where:
-- \(L_{\text{add}}\) is the amount of liquidity added by the provider,
-- \(L_{\text{total}}\) is the total liquidity in the pool before adding,
-- \(S_{\text{total}}\) is the total shares in the pool before adding.
+
+1. For the amount of liquidity added by the provider:
+   $$L_{\text{add}}$$
+
+2. For the total liquidity in the pool before adding:
+   $$L_{\text{total}}$$
+
+3. For the total shares in the pool before adding:
+   $$S_{\text{total}}$$
+
 
 
 #### Removing Liquidity
 
-When removing liquidity, the amount of assets \(A_{\text{remove}}\) returned to the provider is based on the proportion of the shares \(S_{\text{burn}}\) they are burning:
+When removing liquidity, the amount of assets $\(A_{\text{remove}}\)$ returned to the provider is based on the proportion of the shares $\(S_{\text{burn}}\)$ they are burning:
 
 $$A_{\text{remove}} = \frac{S_{\text{burn}}}{S_{\text{total}}} \times A_{\text{total}}$$
 
 where:
-- \(S_{\text{burn}}\) is the number of shares the provider is burning,
-- \(S_{\text{total}}\) is the total shares in the pool,
-- \(A_{\text{total}}\) is the total assets in the pool.
+- $\(S_{\text{burn}}\)$ is the number of shares the provider is burning,
+- $\(S_{\text{total}}\)$ is the total shares in the pool,
+- $\(A_{\text{total}}\)$ is the total assets in the pool.
 
 
 ### Trade Execution
 
 #### Price Impact and Trade Execution
 
-The price impact of a trade and the resulting asset amounts are often determined using functions derived from the constant product formula, \(x \times y = k\), in traditional AMMs or other formulas depending on the specific AMM model. For a trade that exchanges asset \(X\) for asset \(Y\), the formula adjusts to account for the input amount \(X_{\text{in}}\), the liquidity pool's reserves \(X_{\text{reserve}}\) and \(Y_{\text{reserve}}\), and applied fees.
+The price impact of a trade and the resulting asset amounts are often determined using functions derived from the constant product formula, $\(x \times y = k\)$, in traditional AMMs or other formulas depending on the specific AMM model. For a trade that exchanges asset $\(X\)$ for asset $\(Y\)$, the formula adjusts to account for the input amount $\(X_{\text{in}}\)$, the liquidity pool's reserves $\(X_{\text{reserve}}\)$ and $\(Y_{\text{reserve}}\)$, and applied fees.
 
-The new reserve for \(X\) after the trade \(X'_{\text{reserve}}\) can be determined by adding the input amount to the current reserve, adjusting for fees:
+The new reserve for $\(X\)$ after the trade $\(X'_{\text{reserve}}\)$ can be determined by adding the input amount to the current reserve, adjusting for fees:
 
-$$X'_{\text{reserve}} = X_{\text{reserve}} + X_{\text{in}} \times (1 - \text{fee rate})$$
 
-The output amount \(Y_{\text{out}}\) can then be calculated based on the constant product formula or another liquidity model, ensuring the invariant holds after accounting for the input amount and fees.
+
+The output amount $\(Y_{\text{out}}\)$ can then be calculated based on the constant product formula or another liquidity model, ensuring the invariant holds after accounting for the input amount and fees.
 
 
 #### Fee Application
@@ -141,6 +148,8 @@ The `lib.rs` file from the HydraDX Omnipool pallet is central to the Omnipool's 
 
 #### Asset and Liquidity Management
 - **Assets and Positions**: The core file interacts with its own storage items like `Assets` and `Positions` to manage the state of each asset in the Omnipool and the liquidity positions held by users. Functions like `add_token`, `add_liquidity`, and `remove_liquidity` modify these storage items directly to reflect changes in liquidity and asset status.
+
+[![addliq.png](https://i.postimg.cc/8knDh6wj/addliq.png)](https://postimg.cc/CdDW0d3g)
 
 #### Mathematical Operations
 - **Mathematical Libraries**: For price calculations, liquidity adjustments, and trade execution, the Omnipool relies on mathematical models. The file calls into the `hydra_dx_math` library for functions like `calculate_add_liquidity_state_changes`, `calculate_remove_liquidity_state_changes`, and trade price calculations, ensuring that all operations are grounded in solid mathematical principles.
