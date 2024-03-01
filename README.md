@@ -109,6 +109,7 @@ where:
 The price impact of a trade and the resulting asset amounts are often determined using functions derived from the constant product formula, $\(x \times y = k\)$, in traditional AMMs or other formulas depending on the specific AMM model. For a trade that exchanges asset $\(X\)$ for asset $\(Y\)$, the formula adjusts to account for the input amount $\(X_{\text{in}}\)$, the liquidity pool's reserves $\(X_{\text{reserve}}\)$ and $\(Y_{\text{reserve}}\)$, and applied fees.
 
 The new reserve for $\(X\)$ after the trade $\(X'_{\text{reserve}}\)$ can be determined by adding the input amount to the current reserve, adjusting for fees:
+$$X'_{\text{reserve}} = X_{\text{reserve}} + X_{\text{in}} \times (1 - \text{fee rate})$$
 
 
 
